@@ -1,0 +1,50 @@
+You are given an array coordinates, coordinates[i] = [x, y], where [x, y] represents the coordinate of a point. Check if these points make a straight line in the XY plane.
+
+Input: coordinates = [[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]]
+Output: true
+
+Input: coordinates = [[1,1],[2,2],[3,4],[4,5],[5,6],[7,7]]
+Output: false
+
+
+Solution:
+
+class Solution {
+private:
+    int computeGCD(int a,int b){
+        if(b==0) return a;
+        return computeGCD(b,a%b);
+    }
+    
+public:
+    bool checkStraightLine(vector<vector<int>>& coordinates) {
+        if(coordinates.size()==0) return false;
+        if(coordinates.size()==2) return true;
+        
+        sort(coordinates.begin(),coordinates.end(),[](const vector<int>& c1,const vector<int>& c2){
+            if(c1[0]==c2[0]) return c1[1] < c2[1];
+            return c1[0] < c2[0];
+        });
+        
+        int x_diff=abs(coordinates[1][0]-coordinates[0][0]);
+        int y_diff=abs(coordinates[1][1]-coordinates[0][1]);
+        int gcd=computeGCD(x_diff,y_diff);
+        x_diff/=gcd;
+        y_diff/=gcd;
+        
+        for(int i=2;i<coordinates.size();i++){
+            int current_x_diff=abs(coordinates[i][0]-coordinates[i-1][0]);
+            int current_y_diff=abs(coordinates[i][1]-coordinates[i-1][1]);
+            
+            gcd=computeGCD(current_x_diff,current_y_diff);
+            current_x_diff/=gcd;
+            current_y_diff/=gcd;
+            
+            if(current_x_diff!=x_diff || current_y_diff!=y_diff){
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};
